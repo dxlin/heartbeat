@@ -596,6 +596,7 @@ void RPPG::log() {
 }
 
 void RPPG::draw(cv::Mat &frameRGB) {
+    std::stringstream ss;
 
     // Draw roi
     rectangle(frameRGB, roi, GREEN);
@@ -641,12 +642,21 @@ void RPPG::draw(cv::Mat &frameRGB) {
             line(frameRGB, p1, p2, RED, 2);
             p1 = p2;
         }
-    }
 
-    std::stringstream ss;
+        // Label spectrum min
+        ss.precision(3);
+        ss << low*fps/total * SEC_PER_MIN << " Hz";
+        putText(frameRGB, ss.str(), Point(drawAreaTlX, drawAreaTlY + box.height/2.0), FONT_HERSHEY_PLAIN, 1, RED, 1);
+
+        ss.str("");
+        ss.precision(3);
+        ss << high*fps/total * SEC_PER_MIN << " Hz";
+        putText(frameRGB, ss.str(), Point(drawAreaTlX + (high - low) * widthMult, drawAreaTlY + box.height/2.0), FONT_HERSHEY_PLAIN, 1, RED, 1);
+    }
 
     // Draw BPM text
     if (faceValid) {
+        ss.str("");
         ss.precision(3);
         ss << meanBpm << " bpm";
         putText(frameRGB, ss.str(), Point(box.tl().x, box.tl().y - 10), FONT_HERSHEY_PLAIN, 2, RED, 2);
